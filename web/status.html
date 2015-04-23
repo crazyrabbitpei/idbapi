@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Detail page</title>
+    <!-- Bootstrap core CSS -->
+    <link href="http://www.cs.ccu.edu.tw/~cp103m/api/css/blog.css?<?php echo date('l jS \of F Y h:i:s A'); ?>" rel="stylesheet">
+    <link href="http://www.cs.ccu.edu.tw/~cp103m/api/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>-->
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+
+</head>
+<body>
+ <!-- Begin page content -->
+    <div class="container">
+
+	<div class="page-header">
+        	<h1>{dbname}</h1>
+	</div>
+	<footer class="footer">
+		<p class="text-muted">{status}</p>
+	</footer>
+	<p class="lead">{detail}</p>
+	<a class="btn btn-lg btn-primary" href="/api/{key}" role="button">Back to manage page »</a>
+    </div>
+
+
+</body>
+<html>
+
