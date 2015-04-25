@@ -32,10 +32,10 @@ function detail(ip,port,dbname,fin){
 				fin('{"Status":"500 Server error",\n"Detail":"Status db error:'+e+'"}');
 		}
 }
-function post(data,dbname,ip,port,fin){
+function post(fcgi,data,dbname,ip,port,fin){
 	try{
-		child_process.exec('/mnt/data/pc103/api/tool/nginx/bin/fcgiClient -M 1 -U http://'+ip+':'+port+'/idb/'+dbname+' -K "@\\n" -R '+data,function(err,stdout,stderr){
-		console.log('mnt/data/pc103/api/tool/nginx/bin/fcgiClient -M 1 -U http://'+ip+':'+port+'/idb/'+dbname+'/ -K "@\\n" -R '+data);
+		child_process.exec(fcgi+' -M 1 -U http://'+ip+':'+port+'/idb/'+dbname+' -K "@\\n" -R '+data,function(err,stdout,stderr){
+		//console.log(fcgi+' -M 1 -U http://'+ip+':'+port+'/idb/'+dbname+'/ -K "@\\n" -R '+data);
 		//send("PUTOBJ",content,"/idb/"+dbname+"/?rechead=@\n",ip,port,function(stdout){
 			console.log("["+new Date()+"] Post to:"+dbname+", Status:pulling...");
 			if(stderr.indexOf("httpCode=404")==0){
@@ -96,7 +96,7 @@ function send(method,content,path,ip,port,fin){
 	//var post_data = querystring.stringify(content);
 	try{
 		var post_data = content;
-		console.log("./fcgiClient -method "+method+" -U "+"'http://"+ip+":"+port+path+"'");
+		//console.log("./fcgiClient -method "+method+" -U "+"'http://"+ip+":"+port+path+"'");
 		//console.log("./fcgiClient -method "+method+" -U "+"'http://"+ip+":"+port+"'");
 		//new db
 		var options = {
