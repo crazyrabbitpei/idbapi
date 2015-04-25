@@ -1,7 +1,6 @@
 var search = require('./tool/search.js');
 var getkey = require('./tool/getkey.js');
 var manage = require('./tool/manageidb.js');
-var dns = require('dns');
 var request = require('request');
 var http = require('http');
 var express = require("express");
@@ -13,9 +12,18 @@ var child_process = require('child_process');
 var querystring = require('querystring');
 
 var list="";
-//TODO md5 column will add in url,and will change var ip,port
 
 var apikeys = {};
+
+try {
+    service = JSON.parse(fs.readFileSync('./data/path'));
+    var local = service['import'];
+    var fcgi = service['fcgi'];
+} 
+catch (err) {
+    console.error("read service error:"+err);
+process.exit(9);
+}
 
 try {
     service = JSON.parse(fs.readFileSync('./data/service'));
@@ -23,7 +31,7 @@ try {
     var apiport = service['port'];
 } 
 catch (err) {
-    console.error(err);
+    console.error("read service error:"+err);
 process.exit(9);
 }
 
@@ -31,7 +39,7 @@ try {
     apikeys = JSON.parse(fs.readFileSync('./data/shadow'));
 } 
 catch (err) {
-    console.error(err);
+    console.error("read shadow error:"+err);
 	process.exit(9);
 }
 
@@ -70,9 +78,9 @@ if (req.method == 'POST') {
 		}
 		else{
         	var dbname = req.params.dbname;
-		var data = "/mnt/data/NuDB/WebData/test/"+path;
+		var data = local+path;
 		//console.log('./tool/nginx/bin/fcgiClient -M 1 -U http://'+ip+':'+port+'/idb/'+dbname+' -K "@\\n" -R '+data);		
-		manage.post(data,dbname,ip,port,function(msg){
+		manage.post(fcgi,data,dbname,ip,port,function(msg){
 			var web='';
 			msg = msg.replace(/\\\\n/g,"\\n");		
 			msg = msg.replace(/\\n/g,"<br\/>");		
@@ -98,7 +106,7 @@ if (req.method == 'POST') {
 		}
 	}
 	catch(e){
-		res.end('{"Status":"500 Server error",\n"Detail":"Import error"}');
+		res.end('{"Status":"500 Server error",\n"Detail":"Import error:'+e+'"}');
 	}
 }
 else{
@@ -219,6 +227,9 @@ if (req.method == 'POST'||req.method == 'GET') {
 			res.end('{"Status":"500 Server error",\n"Detail":"Get/Delete error"}');
 		}
 	}
+    else{
+			res.end('{"Status":"400 Bad request",\n"Detail":""}');
+    }
 }
 else{
    	console.log("["+new Date()+"], Link from ["+req.connection.remoteAddress+"], Method:"+req.method+", URL:"+req.url+", Status:Refused");
@@ -323,7 +334,7 @@ if (req.method == 'POST'||req.method == 'GET') {
     						apikeys = JSON.parse(fs.readFileSync('./data/shadow'));
 						//console.log("Apply success! Your apikey:"+apikeys[result].ip);
 						//res.end("Apply success! Your apikey:"+result);
-						console.log("key:"+result);
+						//console.log("key:"+result);
 						var key = result;
 
 						showpage(key,function(page){
@@ -344,7 +355,7 @@ if (req.method == 'POST'||req.method == 'GET') {
 					else{
 						if(apikeys[result].pas==req.param('pas')){
 							//res.end("Your apikey:"+result);
-						console.log("key:"+result);
+						//console.log("key:"+result);
 						var key = result;
 
 						showpage(key,function(page){
@@ -460,7 +471,7 @@ app.post('/api/query/newbyi/:key',function(req,res){
 		});
 	}
 	else{
-		var content = "IndexTag	S:0;TF U:0;mTF C:0;TF K:0;TF t:0;t T:0;TF B:0;HFT D:0;TF id:0;TF md5:0;TF";
+		var content = "IndexTag	S:0;TF U:0;mTF C:0;TF K:0;TF t:0;t T:0;TF B:0;HFT D:0;TF id:0;TF md:0;TF";
 		manage.newdb(content,ip,port,dbname,function(result){
 			res.end(result);
 		});
