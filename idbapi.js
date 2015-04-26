@@ -69,7 +69,8 @@ if (req.method == 'POST') {
 		        var port=apikeys[key].port;
 		}
 	try{
-        	var path = req.param('path');
+        	var path = req.body.path;
+            console.log("path:"+path);
 		var test = path.match(/[^\w|^\.]/g);
 		if(test!=null){
 			console.log("Illegal path:"+path);
@@ -90,7 +91,8 @@ if (req.method == 'POST') {
 			var ini = obj.Detail[1].DBini;
 			
 			if(search.ifNull(num)!=0||search.ifNull(ini)!=0){
-				res.end('{"Status":"404 Not found",\n"Detail":"You can\'t import this source or dbname doesn\'t exist."}');
+				//res.end('{"Status":"404 Not found",\n"Detail":"You can\'t import this source or dbname doesn\'t exist."}');
+                res.end(msg);
 			}
 			else{
  				fs.readFile('./web/status.html',function(error,data){
@@ -129,7 +131,7 @@ app.post('/api/query/import/:dbname/:key',function(req,res){
 		        var port=apikeys[key].port;
 		}
         var dbname = req.params.dbname;
-	var content='';
+    	var content='';
 		//console.log(req.param('data'));
 		try{
 			req.on('data', function (data) {
@@ -184,9 +186,11 @@ if (req.method == 'POST'||req.method == 'GET') {
    	console.log("["+new Date()+"], Link from ["+req.connection.remoteAddress+"], Method:"+req.method+", URL:"+req.url);
 	var action = req.params.DelOrGet;
 	if(action=="get"||action=='del'){
+        //path paramaters
 		var ftype = req.params.ftype;
 		var dbname = req.params.dbname;
 		var key = req.params.key;
+
 		if(search.ifNull(apikeys[key])!=0){
         	        res.end('{"Status":"401 Unauthorized",\n"Detail":"invalid API key"}');
 	        }
@@ -194,30 +198,39 @@ if (req.method == 'POST'||req.method == 'GET') {
 	        	var ip=apikeys[key].ip;
 		        var port=apikeys[key].port;
 		}
-		var id = req.param('id');
-		var md5 = req.param('md5');
-		var t = req.param('t');
-		var from = req.param('from');
-		var to = req.param('to');
-		var id = req.param('id');
-		var md5 = req.param('md5');
-		var all = req.param('all');
-		var dir = req.param('dir');
-		var source = req.param('source');
-		var url = req.param('url');
-		var category = req.param('category');
-		var keyword = req.param('keyword');
-		var date = req.param('date');
-		var title = req.param('title');
-		var content = req.param('content');
-		var maxoutput = req.param('maxoutput');
+        //variable
+        /*
+		var dir = req.query.dir;
+		var source = req.query.source;
+		var url = req.query.url;
+		var category = req.query.category;
+		var keyword = req.query.keyword;
+		var title = req.query.title;
+		var content = req.query.content;
+        */
+        //option
+		var id = req.query.id;
+		var md5 = req.query.md5;
+		var date = req.query.date;
+		var maxoutput = req.query.maxoutput;
+		var from = req.query.from;
+		var to = req.query.to;
+        //static
+		var all = req.query.all;
+		var html = req.query.delhtmltag;
+		var lan = req.query.utfCht;
 
-		var html = req.param('delhtmltag');
-		var lan = req.param('utfCht');
 
-		var parm = {id:id,md5:md5,t:t,from:from,to:to,all:all,dir:dir,source:source,url:url,category:category,keyword:keyword,date:date,title:title,content:content,maxoutput:maxoutput};
-		//console.log("Request parameter:"+parm);
-		//console.log(parm);
+		var parm = {id:id,md5:md5,from:from,to:to,date:date,maxoutput:maxoutput};
+        for(i=0;i<Object.keys(req.query).length;i++){
+            key = Object.keys(req.query)[i];
+            value = req.query[key];
+            parm[key]=value;
+        }
+
+		//var parm = {id:id,md5:md5,from:from,to:to,all:all,dir:dir,source:source,url:url,category:category,keyword:keyword,date:date,title:title,content:content,maxoutput:maxoutput};
+		//console.log("parm:"+JSON.stringify(parm));
+        //console.log("total key:"+Object.keys(parm));
 		try{
 			search.search(action,dbname,ftype,html,lan,parm,ip,port,function(result){
 					res.end(result);
@@ -276,7 +289,7 @@ app.get('/test/web/:file',function(request,res){
 app.all('/api/:key',function(req,res){
 if (req.method == 'POST'||req.method == 'GET') {
    	console.log("["+new Date()+"], Link from ["+req.connection.remoteAddress+"], Method:"+req.method+", URL:"+req.url);
-	if((search.ifNull(req.param('ip'))!=0||search.ifNull(req.param('port'))!=0||search.ifNull(req.param('pas'))!=0)&&search.ifNull(apikeys[req.params.key])!=0){
+	if((search.ifNull(req.query.ip)!=0||search.ifNull(req.query.port)!=0||search.ifNull(req.query.pas)!=0)&&search.ifNull(apikeys[req.params.key])!=0){
 	//if((search.ifNull(req.param('ip'))!=0||search.ifNull(req.param('port'))!=0||search.ifNull(req.param('pas'))!=0)){
  		fs.readFile('./web/login.html',function(error,data){
 			data = S(data).replaceAll("Hello","Please input ip,port and password").s;		
@@ -284,7 +297,6 @@ if (req.method == 'POST'||req.method == 'GET') {
 		});
 	}
 	else if(search.ifNull(apikeys[req.params.key])==0){
-		
 		var key = req.params.key;
 		manage.send("DIR",'',"/idb/",apikeys[key].ip,apikeys[key].port,function(stdout){
 			if(stdout=='false'){
@@ -303,20 +315,20 @@ if (req.method == 'POST'||req.method == 'GET') {
 	}
 	
 	else{
-		var test1 = req.param('ip').match(/\b([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\b/);
-		var test2 = req.param('port').match(/[^0-9]/);
+		var test1 = req.query.ip.match(/\b([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\b/);
+		var test2 = req.query.port.match(/[^0-9]/);
 		if(test1==null||test2!=null){
  			fs.readFile('./web/login.html',function(error,data){
 				data = S(data).replaceAll("Hello","Illegal ip or port").s;		
-				console.log("illegal:"+req.param('ip')+":"+req.param('port'));
+				console.log("illegal:"+req.query.ip+":"+req.query.port);
 				res.end(data);
 			});
 		}
 		else{
-		var id = req.param('ip')+req.param('port');
+		var id = req.query.ip+req.query.port;
 		getkey.getmd5(id,function(result){
 			if(search.ifNull(apikeys[result])!=0){
-				manage.send("DIR",'',"/idb/",req.param('ip'),req.param('port'),function(stdout){
+				manage.send("DIR",'',"/idb/",req.query.ip,req.query.port,function(stdout){
 					if(stdout=='false'){
  						fs.readFile('./web/login.html',function(error,data){
 							data = S(data).replaceAll("Hello","Your ip or port doesn\'t exist or you haven\'t start your idb server").s;		
@@ -326,9 +338,9 @@ if (req.method == 'POST'||req.method == 'GET') {
 					}
 					else{
 						var obj={};
-						obj.pas=req.param('pas');
-						obj.ip=req.param('ip');
-						obj.port=req.param('port');
+						obj.pas=req.query.pas;
+						obj.ip=req.query.ip;
+						obj.port=req.query.port;
 						apikeys[result] = obj;
 						fs.writeFileSync('./data/shadow',JSON.stringify(apikeys));
     						apikeys = JSON.parse(fs.readFileSync('./data/shadow'));
@@ -344,7 +356,7 @@ if (req.method == 'POST'||req.method == 'GET') {
 				});	
 			}
 			else{
-				manage.send("DIR",'',"/idb/",req.param('ip'),req.param('port'),function(stdout){
+				manage.send("DIR",'',"/idb/",req.query.ip,req.query.port,function(stdout){
 					if(stdout=='false'){
  						fs.readFile('./web/login.html',function(error,data){
 							data = S(data).replaceAll("Hello","Your ip or port doesn\'t exist or you haven\'t start your idb server").s;		
@@ -353,7 +365,7 @@ if (req.method == 'POST'||req.method == 'GET') {
 						//res.end('{"Status":"403 Forbidden",\n"Detail":"your ip or port doesn\'t exist or you haven\'t start your idb server"}');
 					}
 					else{
-						if(apikeys[result].pas==req.param('pas')){
+						if(apikeys[result].pas==req.query.pas){
 							//res.end("Your apikey:"+result);
 						//console.log("key:"+result);
 						var key = result;
@@ -413,6 +425,7 @@ function showpage(key,fin){
 						web+="<h3>DB List</h3>";
 						for(i=0;i<list.length-1;i++){
 							web+="<form id='import"+i+"' name='import"+i+"' method='post' action='/api/query/import/local/"+list[i]+"/"+key+"'>";
+				res.end('{"Status":"404 Not found",\n"Detail":"You can\'t import this source or dbname doesn\'t exist."}');
 							web+="<a href='http://"+apiip+":"+apiport+"/api/query/statusbyi/"+list[i]+"/"+key+"'>"+list[i]+"</a><input type='hidden' name='dbname' value='"+list[i]+"'>"
 							+"<input type='text' name='path' value='' placeholder='請輸入檔案名稱'>"
 							+"<input type='submit' name='import' id='import' value='Import' /><br/>"
@@ -462,23 +475,24 @@ app.post('/api/query/newbyi/:key',function(req,res){
 	        	var ip=apikeys[key].ip;
 		        var port=apikeys[key].port;
 		}
-        var dbname = req.param('dbname');
-	if(search.ifNull(req.param('index'))==0){
-		var content=req.param('index');
+        var dbname = req.body.dbname;
+	if(search.ifNull(req.query.index)==0){
+		var content=req.query.index;
 		//console.log(content);
 		manage.newdb(content,ip,port,dbname,function(result){
 			res.end(result);
 		});
 	}
 	else{
-		var content = "IndexTag	S:0;TF U:0;mTF C:0;TF K:0;TF t:0;t T:0;TF B:0;HFT D:0;TF id:0;TF md:0;TF";
+		//var content = "IndexTag	S:0;TF U:0;mTF C:0;TF K:0;TF t:0;t T:0;TF B:0;HFT D:0;TF id:0;TF md:0;TF";
+        var content="";
 		manage.newdb(content,ip,port,dbname,function(result){
 			res.end(result);
 		});
 
 	}
 });
-app.post('/api/query/new/:key',function(req,res){
+app.post('/api/query/new/:dbname/:key',function(req,res){
    	console.log("["+new Date()+"], Link from ["+req.connection.remoteAddress+"], Method:"+req.method+", URL:"+req.url);
 	
 		var key = req.params.key;
@@ -489,7 +503,7 @@ app.post('/api/query/new/:key',function(req,res){
 	        	var ip=apikeys[key].ip;
 		        var port=apikeys[key].port;
 		}
-        var dbname = req.param('dbname');
+        var dbname = req.params.dbname;
 	var content='';
 		try{
 			req.on('data', function (data) {
@@ -510,7 +524,27 @@ app.post('/api/query/new/:key',function(req,res){
 	
 		}
 });
-app.post('/api/query/delete/:key',function(req,res){
+app.post('/api/query/deletebyi/:key',function(req,res){
+   	console.log("["+new Date()+"], Link from ["+req.connection.remoteAddress+"], Method:"+req.method+", URL:"+req.url);
+		var key = req.params.key;
+		if(search.ifNull(apikeys[key])!=0){
+        	        res.end('{"Status":"401 Unauthorized",\n"Detail":"invalid API key"}');
+	        }
+	        else{
+	        	var ip=apikeys[key].ip;
+		        var port=apikeys[key].port;
+		}
+        var dbname = req.body.dbname;
+        try{
+		manage.deldb(ip,port,dbname,function(msg){
+			res.end(msg);
+		})
+	}
+	catch(e){
+		res.end('{"Status":"500 Server error",\n"Detail":"Delete db error"}');
+	}
+});
+app.delete('/api/query/delete/:dbname/:key',function(req,res){
    	console.log("["+new Date()+"], Link from ["+req.connection.remoteAddress+"], Method:"+req.method+", URL:"+req.url);
 
 		var key = req.params.key;
@@ -521,7 +555,7 @@ app.post('/api/query/delete/:key',function(req,res){
 	        	var ip=apikeys[key].ip;
 		        var port=apikeys[key].port;
 		}
-        var dbname = req.param('dbname');
+        var dbname = req.params.dbname;
         try{
 		manage.deldb(ip,port,dbname,function(msg){
 			res.end(msg);
@@ -546,7 +580,6 @@ if (req.method == 'POST'||req.method == 'GET') {
 	try{
         	var dbname = req.params.dbname;
 		manage.detail(ip,port,dbname,function(msg){
-			var web='';
 			msg = msg.replace(/\\\\n/g,"\\n");		
 			msg = msg.replace(/\\n/g,"<br\/>");		
 			var obj =  JSON.parse(msg);

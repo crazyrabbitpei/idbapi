@@ -12,7 +12,6 @@
  
 <body>
 <h1>idb測試系統</h1>
-<p>請檢視原始碼來取得apikey</p>
 <h2>NEW</h2>
 <form id="form1" name="form1" method="post" action="/api/query/newbyi/{key}">
   <!--<input type="text" name="ip" id="ip" placeholder="Please Input IP" />
@@ -22,7 +21,7 @@
   <input type="submit" name="submit" id="submit" value="Submit" />
 </form>
 <h2>DELETE</h2>
-<form id="form1" name="form1" method="post" action="/api/query/delete/{key}">
+<form id="form1" name="form1" method="post" action="/api/query/deletebyi/{key}">
   <!--<input type="text" name="ip" id="ip" placeholder="Please Input IP" />
   <input type="text" name="port" id="port" placeholder="Please Input Port" />-->
   <input type="text" name="dbname" id="dbname" placeholder="請輸入dbname" />

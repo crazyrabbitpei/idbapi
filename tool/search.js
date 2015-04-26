@@ -57,6 +57,8 @@ function search(action,db,type,html,lan,parm,ip,p,fin){
     		if(ifNull(parm['all'])==0){
 			query += newformat(parm['all'])+" & ";
 		}
+        //gais format
+        /*
     		if(ifNull(parm['title'])==0){
 			//console.log("title:"+newformat(parm['title']));
 			query+='(@T:'+newformat(parm['title'])+') & ';
@@ -81,7 +83,20 @@ function search(action,db,type,html,lan,parm,ip,p,fin){
     		if(ifNull(parm['dir'])==0){
 			query+='(@D:'+newformat(parm['dir'])+') & ';
 		}
-		query=urlencode(S(query).left(S(query).length-2).s);
+        */
+
+        //another format
+        
+        for(i=0;i<Object.keys(parm).length;i++){
+                    key = Object.keys(parm)[i];
+                    //if(key!="dir" && key!="source" && key!="url" && key!="category" && key!="keyword" && key!="title" && key!="content" && key!="all"){
+    		                if(ifNull(parm[key])==0){
+			                    query+='(@'+key+':'+newformat(parm[key])+') & ';
+                            }
+                    //}
+        }
+        
+        query=urlencode(S(query).left(S(query).length-2).s);
 
 		/*----------------------------------------------*/
 		var options = {
@@ -108,7 +123,7 @@ function search(action,db,type,html,lan,parm,ip,p,fin){
 				response.on('end', function () {
 							//console.log(str);
 							if(str==''){
-								fin('{"Status":"404 Not found",\n"List":"'+db+' doesn\'t exist"}');
+								fin('{"Status":"404 Not found",\n"Detail":"'+db+' doesn\'t exist"}');
 								return;
 							}
 							else{
@@ -260,7 +275,15 @@ function newformat(parm){
 	//parm = S(parm).replaceAll("'"," ").s;
 	return parm;
 }
-
+function checkGaisFormat(key,fin){
+    console.log("checkGaisFormat");
+    if(key!="dir" && key!="source" && key!="url" && key!="category" && key!="keyword" && key!="title" && key!="content" && key!="all"){
+        //fin("not gais");
+    }
+    else{
+        //fin("gais");
+    }
+}
 function del(db,oid,fin,ip,p) {
 		//console.log("del:"+oid);
 		var options = {
@@ -278,7 +301,7 @@ function del(db,oid,fin,ip,p) {
 										str += chunk;
 										});
 				response.on('end', function () {
-								str = '{"Status":"200 OK",\n"List":"delete success"}';
+								str = '{"Status":"200 OK",\n"Detail":"delete success"}';
 								fin(str);
 								});
 		}
@@ -353,14 +376,14 @@ function getbyoid(from,to,db,oid,count,zAll,time,query,type,html,lan,fin,ip,p){
 									str = JSON.stringify(str);
 									//query = JSON.stringify(query);
 
-									str = '{"Query":"'+query+'",\n"Count":'+count+',\n"ExeTime":'+time+',\n"from":'+from+',\n"to":'+to+',\n"zAll":'+zAll+',\n"List":'+str+'}';
+									str = '{"Query":"'+query+'",\n"Count":'+count+',\n"ExeTime":'+time+',\n"from":'+from+',\n"to":'+to+',\n"zAll":'+zAll+',\n"Detail":'+str+'}';
 									//str = '{"MaxOutput":'+count+',\n"ExeTime":'+time+',\n"Results":'+str+'}';
 								}
 								else{
 									
 									str = S(str).replaceAll("{\"List\" :","").s;
 									str = S(str).replaceAll('}\n]}','},').s;
-									str = '{"Query":"'+query+'",\n"Count":'+count+',\n"ExeTime":'+time+',\n"from":'+from+',\n"to":'+to+',\n"zAll":'+zAll+',\n"List":'+str+'}';
+									str = '{"Query":"'+query+'",\n"Count":'+count+',\n"ExeTime":'+time+',\n"from":'+from+',\n"to":'+to+',\n"zAll":'+zAll+',\n"Detail":'+str+'}';
 									str = S(str).replaceAll('},\n}','}]}').s;
 								}
 								
@@ -369,7 +392,7 @@ function getbyoid(from,to,db,oid,count,zAll,time,query,type,html,lan,fin,ip,p){
 									
 								}catch(e){
 									str = JSON.stringify(str);
-									fail = '{"Status":"500 Server error",\n"List":"json parse error:'+e+':"'+str+'}';
+									fail = '{"Status":"500 Server error",\n"Detail":"json parse error:'+e+':"'+str+'}';
 									fin(fail);
 
 									return ;

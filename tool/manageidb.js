@@ -134,7 +134,7 @@ function send(method,content,path,ip,port,fin){
 			return;
 		});
 		if(options.method=='POST'|| options.method=='PUTOBJ' || options.method=='NEW'){
-			//console.log("write post_data:"+post_data);
+			//console.log(post_data);
  			req.write(post_data,"UTF-8",function(res){
 				//console.log("write status:"+res);
 			});
