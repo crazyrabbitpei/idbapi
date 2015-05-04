@@ -90,12 +90,12 @@ function search(action,db,type,html,lan,parm,ip,p,fin){
         for(i=0;i<Object.keys(parm).length;i++){
                     key = Object.keys(parm)[i];
                     //if(key!="dir" && key!="source" && key!="url" && key!="category" && key!="keyword" && key!="title" && key!="content" && key!="all"){
+                    if(key!="date" && key!="maxoutput" && key!="from" && key!="to" && key!="lan" && key!="html" &&key!="all" &&key!="id" && key!="md"){
     		                if(ifNull(parm[key])==0){
 			                    query+='(@'+key+':'+newformat(parm[key])+') & ';
                             }
-                    //}
+                    }
         }
-        
         query=urlencode(S(query).left(S(query).length-2).s);
 
 		/*----------------------------------------------*/
@@ -285,7 +285,7 @@ function checkGaisFormat(key,fin){
     }
 }
 function del(db,oid,fin,ip,p) {
-		//console.log("del:"+oid);
+		console.log("del:"+oid);
 		var options = {
 			host: ip,
 	  		path: '/idb/'+db+'/?cmd=delobject+oid:'+oid,//cmd method,可以指定多個

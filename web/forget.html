@@ -3,23 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>Apply</title>
+  <title>Forget password</title>
   <link rel="stylesheet" href="/css/login.css">
 </head>
 <body>
   <section class="container">
     <div class="login">
-      <h1>Apply an key for your idb api</h1>
-      <form method="post" action="/check">
-        <p><input type="password" name="pas" value="" placeholder="Your password"></p>
+      <h1>Changeing password</h1>
+      <form method="post" action="">
+        <p><input type="password" name="oldpas" value="" placeholder="Your old password"></p>
         <p><input type="text" name="ip" value="" placeholder="Your ip"></p>
         <p><input type="text" name="port" value="" placeholder="Your port"></p>
-        <p class="submit"><input type="submit" name="commit" value="Apply"></p>
+        <p><input type="password" name="pas" value="" placeholder="Your new password"></p>
+        <p class="submit"><input type="submit" name="commit" value="Change"></p>
       </form>
-    <!--<a href="forget.html">Forget password? </a>-->
-    </div>
-    <div class="login-help">
-      <p>Hello</p>
+      <a href="login.html">Back</a>
     </div>
   </section>
 

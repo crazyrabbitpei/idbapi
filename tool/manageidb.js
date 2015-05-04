@@ -122,7 +122,8 @@ function send(method,content,path,ip,port,fin){
                 	                                         fin(str);
 							}
 							else{
-								fin('{"Status":"500 Server error",\n"Detail":"file too large,please use [140.123.4.160:4321/api/query/import/local/dbname/{apikey}?path=some.rec] query to import"}');
+								//fin('{"Status":"500 Server error",\n"Detail":"file too large,please use [140.123.4.160:4321/api/query/import/local/dbname/{apikey}?path=some.rec] query to import"}');
+                                fin(str);
 							}			
                        	         });
                 	}

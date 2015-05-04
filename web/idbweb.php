@@ -28,42 +28,6 @@
   <input type="submit" name="submit" id="submit" value="Submit" />
 </form>
  <script>
-/*
-$.ajax("apidata.php",{
-    'data': {"data":"hihi"}, 
-    'type': 'POST',
-    'contentType': 'text/plain' ,
-    'success':function(data){console.log(JSON.stringify(data))}
-});
-*/
-
-$("#post").click(function(){
-console.log("click");
-  var str = $( "#content" ).val();
-  $.post("postdata.php",{content:str,action:"post"},function(data,status){
-    var div = document.getElementsByClassName('container')[0];
-    div.innerHTML = data;
-    console.log("Data: " + data + "\nStatus: " + status);
-  });
-});
-$("#getmd5").click(function(){
-console.log("click");
-  var str = $( "#content" ).val();
-  $.post("postdata.php",{content:str,action:"getmd5"},function(data,status){
-    var div = document.getElementsByClassName('container')[0];
-    div.innerHTML = data;
-    console.log("Data: " + data + "\nStatus: " + status);
-  });
-});
-$("#delhtml").click(function(){
-console.log("click");
-  var str = $( "#content" ).val();
-  $.post("postdata.php",{content:str,action:"delhtml"},function(data,status){
-    var div = document.getElementsByClassName('container')[0];
-    div.innerHTML = data;
-    console.log("Data: " + data + "\nStatus: " + status);
-  });
-});
 
 </script>
 </body>
