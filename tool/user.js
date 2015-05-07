@@ -64,9 +64,5 @@ function check(req,res,option){
             });
         }
 }
-function change(fin){
-
-}
 exports.check = check;
-exports.change = change;
 
