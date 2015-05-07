@@ -1,6 +1,5 @@
 
 //TODO : seperate all functions to routes file
-var routes = require('./routes');
 var config = require('./tool/config.js');
 var user = require('./tool/user.js');
 var manage = require('./tool/manageidb.js');
@@ -78,10 +77,6 @@ app.use("/api/*",function(req,res,next){
 var server = http.createServer(app);
 app.post('/check',function(req,res){
         user.check(req,res,"ckeck");
-
-});
-app.post('/change',function(req,res){
-        user.check(req,res,"change");
 
 });
 app.get('/api/:key',function(req,res){
@@ -224,12 +219,17 @@ app.post('/api/query/import/:dbname/:key',function(req,res){
 		}
 });
 
-app.all('/api/query/:DelOrGet/:ftype/:dbname/:key',function(req,res){
-if (req.method == 'GET'||req.method =="POST") {
-	var action = req.params.DelOrGet;
-	if(action=="get"||action=='del'){
+app.all('/api/query/:DelOrGet(del|get)/:ftype(gais|json)?/:dbname/:key',function(req,res){
+    if(req.params.DelOrGet&&(req.method == 'GET'||req.method =="POST")){
+	    var action = req.params.DelOrGet;
+        var ftype;
+        if(req.params.ftype){
+		    ftype = req.params.ftype;
+        }
+        else{
+            ftype = "json";
+        }
         //path paramaters
-		var ftype = req.params.ftype;
 		var dbname = req.params.dbname;
 		var key = req.params.key;
 
@@ -240,16 +240,6 @@ if (req.method == 'GET'||req.method =="POST") {
 	        	var ip=apikeys[key].ip;
 		        var port=apikeys[key].port;
 		}
-        //variable
-        /*
-		var dir = req.query.dir;
-		var source = req.query.source;
-		var url = req.query.url;
-		var category = req.query.category;
-		var keyword = req.query.keyword;
-		var title = req.query.title;
-		var content = req.query.content;
-        */
         //option
 		var id = req.query.id;
 		var md5 = req.query.md5;
@@ -281,17 +271,11 @@ if (req.method == 'GET'||req.method =="POST") {
 		catch(e){
 			res.end('{"Status":"500 Server error",\n"Detail":"Get/Delete error"}');
 		}
-	}
-    else{
-			res.end('{"Status":"400 Bad request",\n"Detail":"get or del"}');
     }
-}
-else{
-	res.end('{"Status":"405 Method Not Allowed",\n"Detail":"Only supports POST and GET"}');
-}
+    else{
+	    res.end('{"Status":"405 Method Not Allowed",\n"Detail":"Only supports POST and GET"}');
+    }
 });
-
-
 
 function showpage(key,fin){
 			var ip = apikeys[key].ip
@@ -509,9 +493,9 @@ app.post('/api/query/status/:dbname/:key',function(req,res){
 			res.end('{"Status":"500 Server error",\n"Detail":"Status db error"}');
 		}
 });
-app.get('*',function(req,res){
-    res.redirect('/login.html');
-    res.end();
+app.all('*',function(req,res){
+    //res.redirect('/login.html');
+    res.status(404).send('{"Status":"404 Not found",\n"Detail":"Query error"}');
 });
 
 process.on('SIGINT', function () {
