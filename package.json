@@ -1,12 +1,9 @@
 {
     "name":"idbapi",
-    "version":"0.2",
     "description":"APIs for idb",
     "dependencies":{
         "request":"2.55.0",
-        "http":"0.0.0",
         "express":"4.12.3",
-        "fs":"0.0.2",
         "body-parser":"1.12.3",
         "urlencode":"1.0.0",
         "string":"3.1.1",
